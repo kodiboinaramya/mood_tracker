@@ -1,0 +1,135 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Mood Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7f8;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .mood-form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .entries {
+      margin-top: 30px;
+    }
+    .entry {
+      background: #fff;
+      padding: 15px;
+      border-left: 5px solid #4CAF50;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    .entry h3 {
+      margin: 0 0 5px 0;
+      color: #4CAF50;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Daily Mood Tracker</h1>
+
+  <div class="mood-form">
+    <label for="mood">Mood:</label>
+    <select id="mood">
+      <option value="Happy">😊 Happy</option>
+      <option value="Sad">😢 Sad</option>
+      <option value="Neutral">😐 Neutral</option>
+    </select>
+
+    <label for="note">Note:</label>
+    <textarea id="note" rows="4" placeholder="How are you feeling today?"></textarea>
+
+    <button onclick="saveEntry()">Save Entry</button>
+  </div>
+
+  <div class="entries" id="entries">
+    <h2>Previous Entries</h2>
+    <!-- Entries will appear here -->
+  </div>
+
+  <script>
+    // Load existing entries on page load
+    window.onload = function() {
+      displayEntries();
+    };
+
+    function saveEntry() {
+      const mood = document.getElementById('mood').value;
+      const note = document.getElementById('note').value;
+      const date = new Date().toLocaleDateString();
+
+      if (note.trim() === '') {
+        alert("Please write a note.");
+        return;
+      }
+
+      const entry = { mood, note, date };
+
+      // Get current entries from localStorage
+      let entries = JSON.parse(localStorage.getItem('moodEntries')) || [];
+      entries.unshift(entry); // add new entry to the beginning
+
+      localStorage.setItem('moodEntries', JSON.stringify(entries));
+
+      document.getElementById('note').value = '';
+      displayEntries();
+    }
+
+    function displayEntries() {
+      const entriesDiv = document.getElementById('entries');
+      let entries = JSON.parse(localStorage.getItem('moodEntries')) || [];
+
+      if (entries.length === 0) {
+        entriesDiv.innerHTML = "<h2>Previous Entries</h2><p>No entries yet.</p>";
+        return;
+      }
+
+      entriesDiv.innerHTML = "<h2>Previous Entries</h2>";
+      entries.forEach(entry => {
+        const entryDiv = document.createElement('div');
+        entryDiv.className = 'entry';
+        entryDiv.innerHTML = `
+          <h3>${entry.date} - ${entry.mood}</h3>
+          <p>${entry.note}</p>
+        `;
+        entriesDiv.appendChild(entryDiv);
+      });
+    }
+  </script>
+</body>
+</html>
